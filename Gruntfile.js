@@ -11,7 +11,7 @@ module.exports = function (grunt) {
     grunt.task.loadTasks('tasks');
 
     grunt.initConfig({
-        pkg : {dist : json.dist , dev : json.dev} ,
+        pkg : json.pkg,
         useminPrepare: {
             options: {
                 dest: '.tmp/',
@@ -41,9 +41,14 @@ module.exports = function (grunt) {
             dist :  {
 
                 files : [
-                    {src : [ '!concat/**/*.*' , '**/*'   ], dest : '<%= pkg.dist %>/', expand: true, cwd : '.tmp'}
+                    {src : [ '**/*'   ], dest : '<%= pkg.dist %>/', expand: true, cwd : '.tmp'}
                 ]
 
+            },
+            dev : {
+                files : [
+                    {src : ['**/*'] ,  dest : '<%= pkg.dev %>/', expand: true, cwd : 'src'}
+                ]
             }
         },
 
@@ -70,8 +75,8 @@ module.exports = function (grunt) {
             tmp : {
                 src : ['.tmp/']
             },
-            concat : {
-                src : ['.tmp/concat']
+            dev : {
+                src : ['<%= pkg.dev %>/']
             }
         },
 
@@ -110,7 +115,10 @@ module.exports = function (grunt) {
         inline : {
             dist : {
                 src : ['<%= pkg.dist %>/**/*.css'  , '<%= pkg.dist %>/**/*.js'  , '<%= pkg.dist %>/**/*.html']
+            },
 
+            dev : {
+                src : ['<%= pkg.dev%>/**/*.html']
             }
         },
 
@@ -122,24 +130,60 @@ module.exports = function (grunt) {
             end : {
 
             }
+        },
+
+        watch : {
+            options : {
+                spawn : false
+            },
+
+            main : {
+                files : ['<%= pkg.src %>/**/*'],
+                tasks:['copy:dev']
+            }
+
+//            inline : {
+//                files : ['<%= pkg.src %>/**/*.html'],
+//                tasks : ['inline:dev']
+//            }
+        }
+
+    });
+
+    grunt.event.on('watch', function(action, filepath, target){
+        var destPath = filepath.replace(json.pkg.src , json.pkg.dev );
+        switch(action) {
+            case 'deleted' :
+                grunt.log.writeln('deleted:' + destPath)
+                grunt.file.exists(destPath) && grunt.file.delete(destPath);
+                break;
         }
 
     });
 
 
-    grunt.registerTask('default', [
+    grunt.registerTask('default', ['dev']);
+
+    grunt.registerTask('dist' , [
         'clean:dist' ,
         'clean:tmp' ,
         'copy:tmp',         // 将文件copy 到 tmp 去 , 如果不copy, concat 只生成合并后的文件到 tmp
         'useminPrepare' ,   // usemin 准备
         'concat',
         'copy:dist',
-        'inline',
-        'usemin:html',            // 替换合并路径 , 有对 grunt.filerev && grunt.filerev.summary 做了兼容
+        'inline:dist',
+        'usemin:html',      // 替换合并路径 , 有对 grunt.filerev && grunt.filerev.summary 做了兼容
         'filerev',          // 生成md5 ，如果文件存在则改名字，所以处理后不会有多余的未md5的名字
         'md5Url' ,
         'cdn:dist',
         'end'
+    ]);
+
+    grunt.registerTask('dev' , [
+        'clean:dev',
+        'copy:dev',
+//        'inline:dev',
+        'watch:main'
     ]);
 
 }
