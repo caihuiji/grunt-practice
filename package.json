@@ -11,10 +11,19 @@
         "grunt-contrib-watch": "*",
         "grunt-contrib-copy": "*",
         "grunt-contrib-clean": "*",
+        "grunt-contrib-cssmin": "*",
         "grunt-inline": "*",
         "grunt-concurrent": "*",
         "grunt-filerev": "*",
         "grunt-usemin": "*",
-        "matchdep" : "*"
+        "matchdep" : "*",
+        "chalk": "^0.5.1",
+        "date-time": "^1.0.0",
+        "figures": "^1.0.0",
+        "hooker": "^0.2.3",
+        "pretty-ms": "^1.0.0",
+        "text-table": "^0.2.0",
+        "jpegtran-bin": "*",
+        "optipng-bin": "*"
     }
 }

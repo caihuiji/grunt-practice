@@ -9,7 +9,9 @@
         "dist" : "dist",
         "src" : "src",
         "dev" : "dev"
+    },
 
-    }
+
+    "uglifyIgnore": ["!**/ckeditor.js"]
 
 }
